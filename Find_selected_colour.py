@@ -1,13 +1,17 @@
 import cv2
 import numpy as np
 
-path_image = "DATA/TRAIN_COLOURS2/color palette.jpg"
+# path_image = "DATA/TRAIN_COLOURS2/color palette.jpg"
+# path_image = "/home/anfenix/DATA/GIT/OpenCV/DATA/TRAIN2/TEST.png"
+path_image = "/home/anfenix/DATA/GIT/OpenCV/DATA/TRAIN1/SAMPLES/CROP_002_IMGA0073.png"
 # path_image = "/home/anfenix/DATA/GIT/OpenCV/DATA/OUTPUT/image.png"
 # path_image = "/home/anfenix/DATA/GIT/OpenCV/DATA/OUTPUT/image2.jpg"
 
 IMAGE = cv2.imread(path_image)
-HEIGHT, WIDTH = (700, 500)
 
+resize_k = round(700/max(IMAGE.shape))
+
+HEIGHT, WIDTH = resize_k *IMAGE.shape[1], resize_k*IMAGE.shape[0]
 IMAGE = cv2.resize(IMAGE, (HEIGHT, WIDTH))
 
 
