@@ -9,7 +9,7 @@ NPZERO = np.zeros((500, 500, 3))
 GREEN = (0, 255, 0)
 
 
-class BaseImage:
+class ViewImage:
     name: str
     image_view = None
     image_sample = None
@@ -17,9 +17,13 @@ class BaseImage:
     clicks = {"DOWN": (0, 0), "UP": (100, 100)}
     REGION_COLOR = GREEN
 
-    def __init__(self, name, image=NPZERO):
+    def __init__(self, name, work_task=None, image=NPZERO):
         self.image_view = self.image_sample = image
         self.name = name
+
+        if work_task is not None:
+            self.work = work_task
+
         cv2.namedWindow(name)
         cv2.setMouseCallback(name, self.mouse_reaction)
 
@@ -56,52 +60,34 @@ class BaseImage:
         return f"IMAGE: [{self.name}]"
 
 
-class SampleView(BaseImage):
+def crop(self, data):
+    slices = zip(*data)
+    xs, ys = map(lambda x: slice(*sorted(x)), slices)  # in numpy: numpy[y][x]
 
-    def work(self, data):
-        slices = zip(*data)
-        xs, ys = map(lambda x: slice(*sorted(x)), slices)  # in numpy: numpy[y][x]
-
-        crop = self.image_sample[ys, xs]
-        WINDOWS["CROP"].update(crop.copy())
+    crop = self.image_sample[ys, xs]
+    WINDOWS["CROP"].update(crop.copy())
 
 
-class CROPView(BaseImage):
+def select_color(self, data):
+    slices = zip(*data)
+    xs, ys = map(lambda x: slice(*sorted(x)), slices)  # in numpy: numpy[y][x]
+    selected_color = self.image_sample[ys, xs]
 
-    def work(self, data):
-        slices = zip(*data)
-        xs, ys = map(lambda x: slice(*sorted(x)), slices)  # in numpy: numpy[y][x]
-        selected_color = self.image_sample[ys, xs]
+    all_colours = zip(*(h for i in selected_color for h in i))
+    xx = (set(i) - {0} for i in all_colours)
+    min_max = zip(*((min(i), max(i)) for i in xx))
 
-        all_colours = zip(*(h for i in selected_color for h in i))
-        xx = (set(i) - {0} for i in all_colours)
-        min_max = zip(*((min(i), max(i)) for i in xx))
+    lower_colour, upper_colour = map(lambda c: np.array(c, dtype="uint8"), min_max)
 
-        lower_colour, upper_colour = map(lambda c: np.array(c, dtype="uint8"), min_max)
+    sample = WINDOWS["SAMPLE"].image_sample
+    mask = cv2.inRange(sample, lower_colour, upper_colour)
+    collage = cv2.bitwise_and(sample, sample, mask=mask)
 
-        sample = WINDOWS["SAMPLE"].image_sample
-        mask = cv2.inRange(sample, lower_colour, upper_colour)
-        collage = cv2.bitwise_and(sample, sample, mask=mask)
-
-        WINDOWS["TRUE_MASK"].update(collage)
+    WINDOWS["TRUE_MASK"].update(collage)
 
 
-"""
-
-
-        all_colours = zip(*(h for i in selected_color for h in i))
-        xx = (set(i) - {0} for i in all_colours)
-        min_max = zip(*((min(i), max(i)) for i in xx))
-        lower_colour, upper_colour = map(lambda c: np.array(c, dtype="uint8"), min_max)
-        # the mask
-        # map(lambda c: np.array(c, dtype="uint8"),
-        # mask = cv2.inRange(sample_, lower_colour, upper_colour)
-        mask = cv2.inRange(self.image_sample, lower_colour, upper_colour)
-        return cv2.bitwise_and(self.image_sample, self.image_sample, mask=mask)
-        
-        
-"""
-
+def deselect_color(self, data):
+    pass
 
 path_image = "/home/anfenix/DATA/GIT/OpenCV/DATA/TRAIN1/2021-03-03 16-25-15.JPG"
 # path_image = "/home/anfenix/DATA/GIT/OpenCV/DATA/TRAIN1/SAMPLES/CROP_002_IMGA0073.png"
@@ -114,10 +100,10 @@ HEIGHT, WIDTH = map(lambda x: round(resize_k * x), IMAGE.shape[:-1])
 IMAGE = cv2.resize(IMAGE, (HEIGHT, WIDTH))
 
 WINDOWS = {
-    "SAMPLE": SampleView("SAMPLE", IMAGE),
-    "CROP": CROPView("CROP"),
-    "TRUE_MASK": CROPView("TRUE_MASK"),
-    "FALSE_MASK": CROPView("FALSE_MASK"),
+    "SAMPLE": ViewImage("SAMPLE", crop, image=IMAGE),
+    "CROP": ViewImage("CROP", select_color),
+    "TRUE_MASK": ViewImage("TRUE_MASK", deselect_color),
+    "FALSE_MASK": ViewImage("FALSE_MASK"),
 }
 
 while True:
