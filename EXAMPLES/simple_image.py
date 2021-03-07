@@ -18,7 +18,7 @@ for b in l:
 
 nn = np.array(ll, dtype="uint8")
 image = nn.reshape(4096, 4096, 3)
-cv2.imwrite('/home/anfenix/DATA/GIT/OpenCV/DATA/OUTPUT/image.png', image)
+cv2.imwrite('/DATA/OUTPUT/image.png', image)
 # cv2.namedWindow('color detection')
 # cv2.imshow("color detection", image)
 # cv2.waitKey(0)

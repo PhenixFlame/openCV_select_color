@@ -7,7 +7,7 @@ import cv2
 # ap.add_argument("-i", "--image", help = "path to the image")
 # args = vars(ap.parse_args())
 # # load the image
-path_image = "./DATA/TRAIN_COLORS/TARGET.png"
+path_image = "../DATA/TRAIN_COLORS/TARGET.png"
 
 image = cv2.imread(path_image)
 

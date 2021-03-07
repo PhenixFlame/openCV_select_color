@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 
 
-path_image = "/home/anfenix/DATA/GIT/OpenCV/DATA/TRAIN1/SAMPLES/CROP_002_IMGA0073.png"
+path_image = "/DATA/TRAIN1/SAMPLES/CROP_002_IMGA0073.png"
 
 img = cv2.imread(path_image)
 # cv2.imshow("Wave", img)

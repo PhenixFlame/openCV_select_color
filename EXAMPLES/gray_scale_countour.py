@@ -22,7 +22,7 @@ def grayscale_17_levels(image):
             break
 
 
-image = cv2.imread('/home/anfenix/DATA/GIT/OpenCV/DATA/TRAIN2/TEST.png')
+image = cv2.imread('/DATA/TRAIN2/TEST.png')
 viewImage(image)
 gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 grayscale_17_levels(gray)

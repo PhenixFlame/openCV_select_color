@@ -4,7 +4,7 @@ from time import asctime
 
 # path_image = "DATA/TRAIN_COLOURS2/color palette.jpg"
 # path_image = "/home/anfenix/DATA/GIT/OpenCV/DATA/TRAIN2/TEST.png"
-path_image = "/home/anfenix/DATA/GIT/OpenCV/DATA/TRAIN1/SAMPLES/CROP_002_IMGA0073.png"
+path_image = "/DATA/TRAIN1/SAMPLES/CROP_002_IMGA0073.png"
 # path_image = "/home/anfenix/DATA/GIT/OpenCV/DATA/OUTPUT/image.png"
 # path_image = "/home/anfenix/DATA/GIT/OpenCV/DATA/OUTPUT/image2.jpg"
 

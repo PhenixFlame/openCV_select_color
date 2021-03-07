@@ -1,5 +1,5 @@
-path_image = "DATA/TRAIN_COLOURS2/color palette.jpg"
-path_csv = "DATA/TRAIN_COLOURS2/colors.csv"
+path_image = "../DATA/TRAIN_COLOURS2/color palette.jpg"
+path_csv = "../DATA/TRAIN_COLOURS2/colors.csv"
 import cv2
 import numpy as np
 import pandas as pd
