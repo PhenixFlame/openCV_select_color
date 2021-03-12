@@ -45,14 +45,14 @@ def get_event_info(event):
 
 class ViewImage:
     name: str
-    image_view = None
+    image = None
     image_sample = None
     drawing = False
     clicks = {"DOWN": (0, 0), "UP": (100, 100)}
     REGION_COLOR = GREEN
 
     def __init__(self, name, work_task=None, image=NPZERO):
-        self.image_view = self.image_sample = image
+        self.image = image
         self.name = name
         self.figure = plt.figure()
         self.axes = self.figure.add_subplot(1, 1, 1)
@@ -75,9 +75,10 @@ class ViewImage:
         print(data)
 
     def show(self):
-        self.axes.imshow(self.image_view)
+        self.axes.imshow(self.image)
 
     def update(self, image):
+        self.image = image
         self.axes.imshow(image)
         self.axes.figure.canvas.draw()
 
@@ -89,14 +90,14 @@ def crop(self, data):
     slices = zip(*data)
     xs, ys = map(lambda x: slice(*sorted(x)), slices)  # in numpy: numpy[y][x]
 
-    crop = self.image_sample[ys, xs]
+    crop = self.image[ys, xs]
     WINDOWS["CROP"].update(crop.copy())
 
 
 def select_color(self, data):
     slices = zip(*data)
     xs, ys = map(lambda x: slice(*sorted(x)), slices)  # in numpy: numpy[y][x]
-    selected_color = self.image_sample[ys, xs]
+    selected_color = self.image[ys, xs]
 
     all_colours = zip(*(h for i in selected_color for h in i))
     xx = (set(i) - {0} for i in all_colours)
@@ -104,11 +105,16 @@ def select_color(self, data):
 
     lower_colour, upper_colour = map(lambda c: np.array(c, dtype="uint8"), min_max)
 
-    sample = WINDOWS["SAMPLE"].image_sample
+    sample = WINDOWS["SAMPLE"].image
     mask = cv2.inRange(sample, lower_colour, upper_colour)
     collage = cv2.bitwise_and(sample, sample, mask=mask)
 
-    WINDOWS["TRUE_MASK"].update(collage)
+    # for white backgorund
+    white_mask = np.full(collage.shape, 255, dtype=np.uint8)
+    # collage = cv2.bitwise_or(collage, white_mask)
+    white_collage = np.where(collage[:, :] == [0, 0, 0], white_mask, collage)
+
+    WINDOWS["TRUE_MASK"].update(white_collage.copy())
 
 
 def deselect_color(self, data):
@@ -129,9 +135,9 @@ def myprint(data):
 
 WINDOWS = {
     "SAMPLE": ViewImage("SAMPLE", crop, image=IMAGE),
-    # "CROP": ViewImage("CROP", select_color),
-    "CROP": ViewImage("CROP", myprint),
-    # "TRUE_MASK": ViewImage("TRUE_MASK", deselect_color),
+    "CROP": ViewImage("CROP", select_color),
+    # "CROP": ViewImage("CROP", myprint),
+    "TRUE_MASK": ViewImage("TRUE_MASK", deselect_color),
     # "FALSE_MASK": ViewImage("FALSE_MASK"),
 }
 
