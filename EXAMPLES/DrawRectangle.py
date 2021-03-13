@@ -3,17 +3,17 @@ import matplotlib.pyplot as plt
 
 lll =[]
 def draw_rectangle(event):
-    x,y = event.xdata, event.ydata
+    x, y = event.xdata, event.ydata
     rect = plt.Rectangle((x,y), 0,0)
 
-    axes.add_patch(rect)
-    axes.figure.canvas.draw()
+    # axes.add_patch(rect)
+    # axes.figure.canvas.draw()
     dr = DraggableRectangle(rect, (x, y))
     dr.connect()
     lll.append(dr) # Important! in add_path week links and after that dr object will be deleted!
 
 class DraggableRectangle:
-    def __init__(self, rect:plt.Rectangle, xy):
+    def __init__(self, event, container, axes):
         self.rect = rect
         self.press_xy = xy
 

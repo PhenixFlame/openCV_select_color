@@ -5,6 +5,8 @@ import funcsource as fs
 import matplotlib.pyplot as plt
 from matplotlib.backend_bases import MouseButton
 from plt_rectangle import DrawRectangle
+from copy import deepcopy
+
 
 NPZERO = np.zeros((500, 500, 3))
 
@@ -55,6 +57,7 @@ class ViewImage:
         self.image = image
         self.name = name
         self.figure = plt.figure()
+        self.figure.canvas.set_window_title(name)
         self.axes = self.figure.add_subplot(1, 1, 1)
 
         if work_task is not None:
@@ -64,23 +67,24 @@ class ViewImage:
         self.rectangles = None
 
     def draw_region(self, event):
-        if self.axes.patches:
-            del self.axes.patches[0]
-        r = DrawRectangle(event, work=lambda data: self.work(self, data))
-        self.rectangles = r
-        self.axes.add_patch(r.rect)
-        r.connect()
+        if int(event.button) == 3:
+            if self.axes.patches:
+                del self.axes.patches[0]
+            r = DrawRectangle(event, work=lambda data: self.work(self, data))
+            self.rectangles = r
+            self.axes.add_patch(r.rect)
+            r.connect()
 
     def work(self, data):
         print(data)
 
     def show(self):
         self.axes.imshow(self.image)
+        self.axes.figure.canvas.draw()
 
     def update(self, image):
         self.image = image
-        self.axes.imshow(image)
-        self.axes.figure.canvas.draw()
+        self.show()
 
     def __repr__(self):
         return f"IMAGE: [{self.name}]"
@@ -107,7 +111,7 @@ def select_color(self, data):
 
     sample = WINDOWS["SAMPLE"].image
     mask = cv2.inRange(sample, lower_colour, upper_colour)
-    collage = cv2.bitwise_and(sample, sample, mask=mask)
+    collage = deepcopy(cv2.bitwise_and(sample, sample, mask=mask))
 
     # for white backgorund
     white_mask = np.full(collage.shape, 255, dtype=np.uint8)
@@ -145,25 +149,3 @@ for image in WINDOWS.values():
     with fs.catch_exceptions(message=image.name):
         image.show()
 plt.show()
-#
-# while True:
-#
-#     for image in WINDOWS.values():
-#         with fs.catch_exceptions(message=image.name):
-#             image.show()
-#
-#     key = cv2.waitKey(20)  # wait key in ms
-#     if key != -1:
-#         print(key)
-#
-#     if key == ord('s'):
-#         for name, image in WINDOWS.items():
-#             cv2.imwrite(
-#                 f'/home/anfenix/DATA/GIT/OpenCV/DATA/OUTPUT/SAVE/Util/{asctime()}/{name}.jpg',
-#                 image.image_view
-#             )
-#
-#     if key & 0xFF in (27, ord('q')):
-#         break
-#
-# cv2.destroyAllWindows()
